@@ -1,0 +1,90 @@
+$primary: #dc3545;
+$danger: #dc3545;
+
+@import '~bootstrap/scss/bootstrap';
+
+.emergency-card {
+    transition: transform 0.2s;
+    cursor: pointer;
+    &:hover {
+        transform: translateY(-4px);
+    }
+}
+
+.offline-banner {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #ffc107;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.875rem;
+}
+// Animation for sync icon
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+.sos-button {
+    width: 70px;
+    height: 70px;
+    font-size: 20px;
+    animation: pulse 1s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.sos-button {
+    animation: pulse 1s infinite;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+// FAB Animation
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+// Pull to refresh styling
+.pull-to-refresh {
+    touch-action: pan-y;
+}
+
+// Better card hover
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+}
+
+// Smooth page transitions
+.page-transition-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+.page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
