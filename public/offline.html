@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Usaidizi Pap!</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            text-align: center;
+        }
+        .container { padding: 20px; }
+        h1 { font-size: 2rem; margin-bottom: 1rem; }
+        p { opacity: 0.9; margin-bottom: 2rem; }
+        button {
+            background: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: #dc3545;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="font-size: 4rem;">📡</div>
+        <h1>You're Offline</h1>
+        <p>Usaidizi Pap! works offline.<br>Your saved data is still available.</p>
+        <button onclick="location.reload()">Try Again</button>
+    </div>
+</body>
+</html>

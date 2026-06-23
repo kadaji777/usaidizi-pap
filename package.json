@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "$schema": "https://www.schemastore.org/package.json",
     "private": true,
     "type": "module",
@@ -14,4 +15,70 @@
         "tailwindcss": "^4.0.0",
         "vite": "^7.0.7"
     }
+=======
+  "name": "usaidizi-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:8000",
+  "dependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.126",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "axios": "^1.17.0",
+    "bootstrap": "^5.3.0",
+    "bootstrap-icons": "^1.13.1",
+    "chart.js": "^4.5.1",
+    "dexie": "^4.4.3",
+    "framer-motion": "^12.40.0",
+    "html2canvas": "^1.4.1",
+    "i18next": "^26.3.1",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "jspdf": "^4.2.1",
+    "localforage": "^1.10.0",
+    "react": "^19.2.7",
+    "react-chartjs-2": "^5.3.1",
+    "react-countup": "^6.5.3",
+    "react-dom": "^19.2.7",
+    "react-hot-toast": "^2.6.0",
+    "react-i18next": "^17.0.8",
+    "react-image-gallery": "^2.1.2",
+    "react-router-dom": "^7.17.0",
+    "react-scripts": "5.0.1",
+    "react-share": "^5.3.0",
+    "react-simple-pull-to-refresh": "^1.3.4",
+    "sass": "^1.100.0",
+    "typescript": "^4.9.5",
+    "web-push": "^3.6.7",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+>>>>>>> 1c0de2585467bbe92fe8255677e245f27553feb2
 }

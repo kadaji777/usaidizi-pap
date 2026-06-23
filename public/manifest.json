@@ -1,0 +1,21 @@
+{
+    "name": "Usaidizi Pap!",
+    "short_name": "Usaidizi",
+    "description": "Offline First Aid and Emergency Response",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#dc3545",
+    "background_color": "#ffffff",
+    "icons": [
+        {
+            "src": "/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
