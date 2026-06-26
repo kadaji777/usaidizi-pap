@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './styles/custom.scss';
-
+// Usaidizi Pap! Main Application
 // Auth
 import { AuthProvider, useAuth } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
