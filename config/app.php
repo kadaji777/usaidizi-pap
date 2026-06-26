@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+// Application configuration for Usaidizi Pap!
     /*
     |--------------------------------------------------------------------------
     | Application Name
