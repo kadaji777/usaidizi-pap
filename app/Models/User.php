@@ -1,5 +1,5 @@
 <?php
-
+// Usaidizi Pap! User Model 
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
