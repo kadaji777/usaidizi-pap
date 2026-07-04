@@ -31,7 +31,7 @@ const HomePage: React.FC = () => {
         
         if (localTopics.length === 0 && navigator.onLine) {
             try {
-                const response = await fetch('/api/v1/firstaid');
+                const response = await fetch('http://localhost:8000/api/v1/firstaid');
                 const data = await response.json();
                 await db.firstAidTopics.bulkAdd(data);
                 localTopics = data;
@@ -49,7 +49,7 @@ const HomePage: React.FC = () => {
         if (navigator.onLine) {
             toast.loading('Refreshing data...', { id: 'refresh' });
             try {
-                const response = await fetch('/api/v1/firstaid');
+                const response = await fetch('http://localhost:8000/api/v1/firstaid');
                 const data = await response.json();
                 await db.firstAidTopics.clear();
                 await db.firstAidTopics.bulkAdd(data);
