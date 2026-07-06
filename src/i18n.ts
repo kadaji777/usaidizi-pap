@@ -184,7 +184,7 @@ const resources = {
 'settings.title': 'Mipangilio',
 'settings.dark_mode': 'Hali ya Giza',
 'settings.language': 'Lugha',
-
+'firstaid.warning_signs': 'Warning Signs'
 'patients.title': 'Wagonjwa',
 'patients.add_button': 'Ongeza',
 'patients.no_patients': 'Hakuna wagonjwa waliosajiliwa bado',
