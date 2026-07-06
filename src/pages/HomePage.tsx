@@ -54,10 +54,10 @@ const HomePage: React.FC = () => {
 
     return (
         <div className="container" style={{ maxWidth: '480px', padding: '16px', margin: '0 auto' }}>
-            
+
             {/* Welcome Banner */}
             {user && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-success text-white px-3 py-2 rounded-3 mb-3 text-center"
@@ -69,23 +69,23 @@ const HomePage: React.FC = () => {
             )}
 
             {/* Hero Card */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-white rounded-4 p-4 mb-3"
-                style={{ 
+                style={{
                     background: 'linear-gradient(135deg, #dc3545, #a71d2a)',
                     boxShadow: '0 4px 20px rgba(220, 53, 69, 0.3)'
                 }}
             >
                 <div className="d-flex align-items-center gap-3 mb-2">
-                    <div style={{ 
-                        width: '48px', 
-                        height: '48px', 
-                        background: 'rgba(255,255,255,0.2)', 
-                        borderRadius: '12px', 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                    <div style={{
+                        width: '48px',
+                        height: '48px',
+                        background: 'rgba(255,255,255,0.2)',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '22px'
                     }}>
@@ -96,29 +96,29 @@ const HomePage: React.FC = () => {
                         <small style={{ opacity: 0.8, fontSize: '11px' }}>Emergency First Aid Response</small>
                     </div>
                 </div>
-                
+
                 <p className="mb-3" style={{ fontSize: '14px', opacity: 0.9, lineHeight: '1.5' }}>
                     Your personal emergency response companion. Get instant first aid guidance, even without internet.
                 </p>
-                
+
                 <div className="d-flex gap-2 flex-wrap">
-                    <button 
-                        className="btn btn-light btn-sm fw-semibold" 
-                        onClick={() => navigate('/firstaid/burns')} 
+                    <button
+                        className="btn btn-light btn-sm fw-semibold"
+                        onClick={() => navigate('/firstaid/burns')}
                         style={{ borderRadius: '10px', fontSize: '12px', padding: '8px 16px' }}
                     >
                         <i className="bi bi-book me-1"></i> View Guides
                     </button>
-                    <button 
-                        className="btn btn-outline-light btn-sm fw-semibold" 
-                        onClick={() => navigate('/quiz')} 
+                    <button
+                        className="btn btn-outline-light btn-sm fw-semibold"
+                        onClick={() => navigate('/quiz')}
                         style={{ borderRadius: '10px', fontSize: '12px', padding: '8px 16px' }}
                     >
                         <i className="bi bi-question-circle me-1"></i> Take Quiz
                     </button>
-                    <button 
-                        className="btn btn-outline-light btn-sm fw-semibold" 
-                        onClick={() => window.location.href = 'tel:999'} 
+                    <button
+                        className="btn btn-outline-light btn-sm fw-semibold"
+                        onClick={() => window.location.href = 'tel:999'}
                         style={{ borderRadius: '10px', fontSize: '12px', padding: '8px 16px' }}
                     >
                         <i className="bi bi-sos me-1"></i> SOS 999
@@ -130,24 +130,24 @@ const HomePage: React.FC = () => {
             <div className="row g-2 mb-3">
                 {quickActions.map((action, index) => (
                     <div key={index} className="col-3">
-                        <button 
+                        <button
                             className="w-100 py-3 rounded-3 border-0"
-                            style={{ 
-                                background: '#ffffff', 
+                            style={{
+                                background: '#ffffff',
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                                 transition: 'all 0.2s'
                             }}
-                            onClick={() => { 
-                                if (action.path) navigate(action.path); 
-                                if (action.action) action.action(); 
+                            onClick={() => {
+                                if (action.path) navigate(action.path);
+                                if (action.action) action.action();
                             }}
-                            onMouseEnter={(e) => { 
-                                e.currentTarget.style.transform = 'translateY(-2px)'; 
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'; 
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
                             }}
-                            onMouseLeave={(e) => { 
-                                e.currentTarget.style.transform = 'translateY(0)'; 
-                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; 
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
                             }}
                         >
                             <div style={{ fontSize: '22px', color: action.color }}>
@@ -167,9 +167,9 @@ const HomePage: React.FC = () => {
                     <h6 className="fw-bold mb-0" style={{ fontSize: '14px' }}>
                         <i className="bi bi-heart-pulse me-2 text-danger"></i>Emergency Guides
                     </h6>
-                    <button 
-                        className="btn btn-sm btn-link text-danger p-0" 
-                        onClick={() => navigate('/firstaid/burns')} 
+                    <button
+                        className="btn btn-sm btn-link text-danger p-0"
+                        onClick={() => navigate('/firstaid/burns')}
                         style={{ fontSize: '12px', textDecoration: 'none' }}
                     >
                         See all →
@@ -177,15 +177,15 @@ const HomePage: React.FC = () => {
                 </div>
                 <div className="d-flex gap-2 overflow-auto pb-1" style={{ scrollbarWidth: 'none' }}>
                     {emergencyGuides.map((item, i) => (
-                        <div 
-                            key={i} 
-                            className="flex-shrink-0 text-center" 
+                        <div
+                            key={i}
+                            className="flex-shrink-0 text-center"
                             style={{ width: '72px', cursor: 'pointer' }}
                             onClick={() => navigate(`/firstaid/${item.slug}`)}
                         >
-                            <div style={{ 
-                                background: '#ffffff', 
-                                borderRadius: '12px', 
+                            <div style={{
+                                background: '#ffffff',
+                                borderRadius: '12px',
                                 padding: '12px 0',
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                                 border: '1px solid #f0f0f0'
@@ -228,10 +228,10 @@ const HomePage: React.FC = () => {
                 <div className="row g-2">
                     {features.map((feature, i) => (
                         <div key={i} className="col-6">
-                            <div 
+                            <div
                                 className="p-2 rounded-3 d-flex align-items-center gap-2"
-                                style={{ 
-                                    background: '#ffffff', 
+                                style={{
+                                    background: '#ffffff',
                                     boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                                     border: '1px solid #f0f0f0',
                                     cursor: 'pointer'
@@ -252,14 +252,14 @@ const HomePage: React.FC = () => {
             </div>
 
             {/* CTA */}
-            <div className="text-white rounded-3 p-3 text-center" style={{ 
+            <div className="text-white rounded-3 p-3 text-center" style={{
                 background: 'linear-gradient(135deg, #dc3545, #a71d2a)',
                 boxShadow: '0 4px 16px rgba(220, 53, 69, 0.25)'
             }}>
                 <h6 className="fw-bold mb-1" style={{ fontSize: '14px' }}>Ready to be prepared?</h6>
                 <p className="mb-2" style={{ fontSize: '12px', opacity: 0.9 }}>Save first aid guides offline today!</p>
-                <button 
-                    className="btn btn-light fw-semibold btn-sm" 
+                <button
+                    className="btn btn-light fw-semibold btn-sm"
                     style={{ borderRadius: '10px', fontSize: '12px', padding: '6px 20px' }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >

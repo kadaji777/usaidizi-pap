@@ -89,6 +89,9 @@ const IncidentsPage: React.FC = () => {
                             <div className="d-flex justify-content-between align-items-start">
                                 <div>
                                     <strong>{topics.find(t2 => t2.id === i.topic_id)?.title || t('incidents.emergency_default')}</strong>
+                                    <div className="small text-body-secondary">
+                                        {patients.find(p => p.id === i.patient_id)?.full_name || t('patients.age_unknown')}
+                                    </div>
                                     <div className="small text-body-secondary">{new Date(i.incident_timestamp).toLocaleString()}</div>
                                     <p className="small mt-1 mb-0">{i.description.substring(0, 100)}</p>
                                 </div>
@@ -129,6 +132,7 @@ const IncidentsPage: React.FC = () => {
                                         style={{ borderRadius: '10px' }}
                                         value={formData.topic_id}
                                         onChange={e => setFormData({ ...formData, topic_id: e.target.value })}
+                                        required
                                     >
                                         <option value="">{t('incidents.select_type')}</option>
                                         {topics.map(topic => <option key={topic.id} value={topic.id}>{topic.title}</option>)}
