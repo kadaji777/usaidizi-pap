@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import './styles/custom.scss';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// Auth
-import { AuthProvider, useAuth } from './context/AuthContext';
-import PrivateRoute from './components/PrivateRoute';
-import LoginPage from './pages/LoginPage';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
+import ToastProvider from './components/ToastProvider';
+import OfflineStatus from './components/OfflineStatus';
+import SyncStatus from './components/SyncStatus';
+import AppNavigation from './components/AppNavigation';
+import { performSync } from './services/syncService';
 
 // Pages
-import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+import RoleRouter from './components/RoleRouter';
 import FirstAidDetailPage from './pages/FirstAidDetailPage';
 import IncidentsPage from './pages/IncidentsPage';
 import PatientsPage from './pages/PatientsPage';
@@ -19,18 +23,15 @@ import EmergencyContactsPage from './pages/EmergencyContactsPage';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import FirstAidQuiz from './pages/FirstAidQuiz';
 import ProfilePage from './pages/ProfilePage';
+import AdminDashboard from './pages/AdminDashboard';
 
-// Components
-import OfflineStatus from './components/OfflineStatus';
-import SyncStatus from './components/SyncStatus';
-import ToastProvider from './components/ToastProvider';
-import DarkModeToggle from './components/DarkModeToggle';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import VoiceAssistant from './components/VoiceAssistant';
-import SOSButton from './components/SOSButton';
-import ExportData from './components/ExportData';
-import MedicationReminder from './components/MedicationReminder';
-import FloatingActionButton from './components/FloatingActionButton';
+// Admin Pages
+import UsersPage from './pages/Admin/UsersPage';
+import ContentPage from './pages/Admin/ContentPage';
+import AdminFacilitiesPage from './pages/Admin/FacilitiesPage';
+import SystemHealthPage from './pages/Admin/SystemHealthPage';
+import DataSyncPage from './pages/Admin/DataSyncPage';
+import AnalyticsPage from './pages/Admin/AnalyticsPage';
 
 const AppContent: React.FC = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -38,14 +39,20 @@ const AppContent: React.FC = () => {
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
-        
+
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
-        
+
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data?.type === 'SYNC_TRIGGERED') {
+                    performSync();
+                }
+            });
         }
-        
+
         return () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
@@ -55,106 +62,84 @@ const AppContent: React.FC = () => {
     return (
         <>
             <OfflineStatus isOnline={isOnline} />
-            <DarkModeToggle />
-            <LanguageSwitcher />
             <SyncStatus />
-            <VoiceAssistant />
-            
-            {/* SOS Button */}
-            <div className="position-fixed bottom-0 end-0 m-3" style={{ zIndex: 1000, bottom: '70px' }}>
-                <SOSButton />
-            </div>
-            
-            {/* Floating Action Button */}
-            <FloatingActionButton />
-            
-            {/* Main Content */}
+
             <div className="pb-5">
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/" element={<RoleRouter />} />
                     <Route path="/firstaid/:slug" element={<FirstAidDetailPage />} />
-                    <Route path="/incidents" element={<IncidentsPage />} />
-                    <Route path="/patients" element={<PatientsPage />} />
+
+                    <Route path="/incidents" element={
+                        <ProtectedRoute allowedRoles={['chw', 'admin']}>
+                            <IncidentsPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/patients" element={
+                        <ProtectedRoute allowedRoles={['chw', 'admin']}>
+                            <PatientsPage />
+                        </ProtectedRoute>
+                    } />
+
                     <Route path="/contacts" element={<EmergencyContactsPage />} />
                     <Route path="/facilities" element={<FacilitiesPage />} />
-                    <Route path="/analytics" element={<AnalyticsDashboard />} />
+
+                    <Route path="/analytics" element={
+                        <ProtectedRoute allowedRoles={['chw', 'admin']}>
+                            <AnalyticsDashboard />
+                        </ProtectedRoute>
+                    } />
+
                     <Route path="/quiz" element={<FirstAidQuiz />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+                    {/* Admin Routes */}
+                    <Route path="/admin" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminDashboard />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin/users" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <UsersPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin/content" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <ContentPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin/facilities" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AdminFacilitiesPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin/health" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <SystemHealthPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin/sync" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <DataSyncPage />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin/analytics" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <AnalyticsPage />
+                        </ProtectedRoute>
+                    } />
                 </Routes>
             </div>
-            
-            {/* Bottom Navigation Bar */}
-            <nav className="navbar fixed-bottom navbar-light bg-white border-top py-2 shadow">
-                <div className="container-fluid justify-content-around">
-                    <NavLink to="/" className={({ isActive }) => 
-                        `nav-link text-center ${isActive ? 'text-danger' : 'text-secondary'}`
-                    }>
-                        <i className="bi bi-house-door fs-5 d-block"></i>
-                        <small>Home</small>
-                    </NavLink>
-                    
-                    <NavLink to="/incidents" className={({ isActive }) => 
-                        `nav-link text-center ${isActive ? 'text-danger' : 'text-secondary'}`
-                    }>
-                        <i className="bi bi-journal-text fs-5 d-block"></i>
-                        <small>Logs</small>
-                    </NavLink>
-                    
-                    <NavLink to="/patients" className={({ isActive }) => 
-                        `nav-link text-center ${isActive ? 'text-danger' : 'text-secondary'}`
-                    }>
-                        <i className="bi bi-people fs-5 d-block"></i>
-                        <small>Patients</small>
-                    </NavLink>
-                    
-                    <NavLink to="/contacts" className={({ isActive }) => 
-                        `nav-link text-center ${isActive ? 'text-danger' : 'text-secondary'}`
-                    }>
-                        <i className="bi bi-telephone fs-5 d-block"></i>
-                        <small>Contacts</small>
-                    </NavLink>
-                    
-                    <div className="dropdown">
-                        <button 
-                            className="nav-link text-secondary text-center bg-transparent border-0" 
-                            data-bs-toggle="dropdown"
-                        >
-                            <i className="bi bi-grid-3x3-gap-fill fs-5 d-block"></i>
-                            <small>More</small>
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-end mb-2">
-                            <li>
-                                <NavLink to="/facilities" className="dropdown-item">
-                                    <i className="bi bi-building me-2"></i> Find Help
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/analytics" className="dropdown-item">
-                                    <i className="bi bi-graph-up me-2"></i> Analytics
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/quiz" className="dropdown-item">
-                                    <i className="bi bi-question-circle me-2"></i> Training Quiz
-                                </NavLink>
-                            </li>
-                            <li><hr className="dropdown-divider" /></li>
-                            <li>
-                                <ExportData />
-                            </li>
-                            <li>
-                                <MedicationReminder />
-                            </li>
-                            <li><hr className="dropdown-divider" /></li>
-                            <li>
-                                <NavLink to="/profile" className="dropdown-item">
-                                    <i className="bi bi-person-circle me-2"></i> Profile
-                                </NavLink>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+
+            <AppNavigation />
         </>
     );
 };
@@ -163,16 +148,18 @@ const App: React.FC = () => {
     return (
         <ToastProvider>
             <AuthProvider>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/*" element={
-                            <PrivateRoute>
-                                <AppContent />
-                            </PrivateRoute>
-                        } />
-                    </Routes>
-                </BrowserRouter>
+                <ThemeProvider>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/*" element={
+                                <ProtectedRoute>
+                                    <AppContent />
+                                </ProtectedRoute>
+                            } />
+                        </Routes>
+                    </BrowserRouter>
+                </ThemeProvider>
             </AuthProvider>
         </ToastProvider>
     );

@@ -55,6 +55,7 @@ export interface Facility {
     phone?: string;
     latitude?: number;  // Add this
     longitude?: number; // Add this
+    operating_hours?: string;
 }
 
 

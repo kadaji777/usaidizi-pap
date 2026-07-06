@@ -1,41 +1,29 @@
 {
-    "app_name": "Usaidizi Pap!",
-    "emergency": "Dharura?",
-    "call_999": "Piga 999",
-    "emergency_guides": "Miongozo ya Dharura",
-    "quick_actions": "Vitendo vya Haraka",
+  "home": "Nyumbani",
+  "facilities": "Vituo",
+  "contacts": "Wasiliani",
+  "profile": "Wasifu",
+
+  "actions": {
     "log_incident": "Rekodi Tukio",
     "add_patient": "Ongeza Mgonjwa",
+    "emergency_call": "Piga Dharura",
+    "find_help": "Tafuta Msaada"
+  },
+
+  "features": {
     "patients": "Wagonjwa",
-    "contacts": "Wasiliani",
-    "facilities": "Vituo",
-    "offline_mode": "Inafanya kazi BILA ya intaneti!",
-    "loading": "Inapakia...",
-    "sync": "Sawazisha",
-    "profile": "Wasifu",
-    "logout": "Toka",
-    "login": "Ingia",
-    "register": "Jisajili",
-    "email": "Barua pepe",
-    "password": "Nywila",
-    "full_name": "Jina Kamili",
-    "welcome_back": "Karibu tena",
-    "first_aid": "Miongozo ya Huduma ya Kwanza",
-    "step_by_step": "Maagizo ya Hatua kwa Hatua",
-    "dos": "Fanya Hivi",
-    "donts": "Usifanye Hivi",
-    "warning_signs": "Ishara za Onyo",
-    "severity": "Ukali",
-    "description": "Maelezo",
-    "actions_taken": "Hatua Zilizochukuliwa",
-    "save": "Hifadhi",
-    "cancel": "Ghairi",
-    "delete": "Futa",
-    "edit": "Badilisha",
-    "search": "Tafuta",
-    "no_data": "Hakuna data",
-    "calling": "Inapiga...",
-    "photos": "Picha",
-    "add_photos": "Ongeza Picha",
-    "export_pdf": "Toa PDF"
+    "analytics": "Takwimu"
+  },
+
+  "home": {
+    "greeting_morning": "Habari za Asubuhi",
+    "greeting_afternoon": "Habari za Mchana",
+    "greeting_evening": "Habari za Jioni",
+    "app_tagline": "Huduma ya Dharura ya Kwanza",
+    "description": "Msaidizi wako wa dharura. Pata maelekezo ya haraka hata bila intaneti.",
+    "view_guides": "Tazama Miongozo",
+    "take_quiz": "Fanya Jaribio",
+    "sos": "Dharura 999"
+  }
 }

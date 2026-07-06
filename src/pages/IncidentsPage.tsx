@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 import { db, IncidentLog, Patient, FirstAidTopic } from '../database/db';
 
 const IncidentsPage: React.FC = () => {
     const location = useLocation();
+    const { t } = useTranslation();
     const [incidents, setIncidents] = useState<IncidentLog[]>([]);
     const [patients, setPatients] = useState<Patient[]>([]);
     const [topics, setTopics] = useState<FirstAidTopic[]>([]);
@@ -42,71 +45,122 @@ const IncidentsPage: React.FC = () => {
         });
         setShowModal(false);
         setFormData({ patient_id: '', topic_id: '', description: '', severity: 'medium' });
+        toast.success(t('incidents.saved_success'));
         loadData();
     };
 
+    const severityBadgeColor = (severity: string) => {
+        switch (severity) {
+            case 'critical': return 'danger';
+            case 'high': return 'warning';
+            case 'low': return 'success';
+            default: return 'info';
+        }
+    };
+
     if (loading) {
-        return <div className="text-center py-5"><div className="spinner-border text-danger"></div></div>;
+        return (
+            <div className="text-center py-5">
+                <div className="spinner-border text-danger"></div>
+            </div>
+        );
     }
 
     return (
-        <div className="container py-3">
-            <div className="d-flex justify-content-between mb-3">
-                <h4><i className="bi bi-journal-text me-2 text-danger"></i>Incident Logs</h4>
-                <button className="btn btn-danger" onClick={() => setShowModal(true)}>+ Log</button>
+        <div className="container pt-4 pb-3">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h4 className="mb-0">
+                    <i className="bi bi-journal-text me-2 text-danger"></i>{t('incidents.title')}
+                </h4>
+                <button className="btn btn-danger rounded-pill px-3" onClick={() => setShowModal(true)}>
+                    <i className="bi bi-plus-lg me-1"></i>{t('incidents.log_button')}
+                </button>
             </div>
-            
+
             {incidents.length === 0 ? (
-                <div className="text-center py-5"><p className="text-muted">No incidents logged</p></div>
+                <div className="text-center py-5">
+                    <i className="bi bi-journal-x fs-1 text-body-secondary d-block mb-2"></i>
+                    <p className="text-body-secondary mb-0">{t('incidents.no_incidents')}</p>
+                </div>
             ) : (
                 incidents.map(i => (
-                    <div key={i.id} className="card mb-2">
+                    <div key={i.id} className="card mb-2 border-0 shadow-sm" style={{ borderRadius: '14px' }}>
                         <div className="card-body">
-                            <div className="d-flex justify-content-between">
+                            <div className="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <strong>{topics.find(t => t.id === i.topic_id)?.title || 'Emergency'}</strong>
-                                    <div className="small text-muted">{new Date(i.incident_timestamp).toLocaleString()}</div>
-                                    <p className="small mt-1">{i.description.substring(0, 100)}</p>
+                                    <strong>{topics.find(t2 => t2.id === i.topic_id)?.title || t('incidents.emergency_default')}</strong>
+                                    <div className="small text-body-secondary">{new Date(i.incident_timestamp).toLocaleString()}</div>
+                                    <p className="small mt-1 mb-0">{i.description.substring(0, 100)}</p>
                                 </div>
-                                <span className={`badge bg-${i.severity === 'critical' ? 'danger' : i.severity === 'high' ? 'warning' : 'info'}`}>
-                                    {i.severity}
+                                <span className={`badge bg-${severityBadgeColor(i.severity)} rounded-pill`}>
+                                    {t(`incidents.severity_${i.severity}`)}
                                 </span>
                             </div>
                         </div>
                     </div>
                 ))
             )}
-            
+
             {showModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header bg-danger text-white">
-                                <h5>Log Incident</h5>
-                                <button className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
+                        <div className="modal-content" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                            <div className="modal-header bg-danger text-white border-0">
+                                <h5 className="mb-0">{t('incidents.modal_title')}</h5>
+                                <button
+                                    className="btn-close btn-close-white"
+                                    onClick={() => setShowModal(false)}
+                                    aria-label={t('common.cancel')}
+                                ></button>
                             </div>
                             <form onSubmit={handleSubmit}>
                                 <div className="modal-body">
-                                    <select className="form-select mb-2" value={formData.patient_id} onChange={e => setFormData({...formData, patient_id: e.target.value})}>
-                                        <option value="">Select Patient</option>
+                                    <select
+                                        className="form-select mb-2"
+                                        style={{ borderRadius: '10px' }}
+                                        value={formData.patient_id}
+                                        onChange={e => setFormData({ ...formData, patient_id: e.target.value })}
+                                    >
+                                        <option value="">{t('incidents.select_patient')}</option>
                                         {patients.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}
                                     </select>
-                                    <select className="form-select mb-2" value={formData.topic_id} onChange={e => setFormData({...formData, topic_id: e.target.value})}>
-                                        <option value="">Select Emergency Type</option>
-                                        {topics.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
+                                    <select
+                                        className="form-select mb-2"
+                                        style={{ borderRadius: '10px' }}
+                                        value={formData.topic_id}
+                                        onChange={e => setFormData({ ...formData, topic_id: e.target.value })}
+                                    >
+                                        <option value="">{t('incidents.select_type')}</option>
+                                        {topics.map(topic => <option key={topic.id} value={topic.id}>{topic.title}</option>)}
                                     </select>
-                                    <textarea className="form-control mb-2" rows={3} placeholder="Description" required
-                                              value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}></textarea>
-                                    <select className="form-select" value={formData.severity} onChange={e => setFormData({...formData, severity: e.target.value})}>
-                                        <option value="low">Low</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="high">High</option>
-                                        <option value="critical">Critical</option>
+                                    <textarea
+                                        className="form-control mb-2"
+                                        style={{ borderRadius: '10px' }}
+                                        rows={3}
+                                        placeholder={t('incidents.description_placeholder')}
+                                        required
+                                        value={formData.description}
+                                        onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                    ></textarea>
+                                    <select
+                                        className="form-select"
+                                        style={{ borderRadius: '10px' }}
+                                        value={formData.severity}
+                                        onChange={e => setFormData({ ...formData, severity: e.target.value })}
+                                    >
+                                        <option value="low">{t('incidents.severity_low')}</option>
+                                        <option value="medium">{t('incidents.severity_medium')}</option>
+                                        <option value="high">{t('incidents.severity_high')}</option>
+                                        <option value="critical">{t('incidents.severity_critical')}</option>
                                     </select>
                                 </div>
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                                    <button type="submit" className="btn btn-danger">Save</button>
+                                <div className="modal-footer border-0">
+                                    <button type="button" className="btn btn-outline-secondary rounded-pill" onClick={() => setShowModal(false)}>
+                                        {t('common.cancel')}
+                                    </button>
+                                    <button type="submit" className="btn btn-danger rounded-pill px-4">
+                                        {t('common.save')}
+                                    </button>
                                 </div>
                             </form>
                         </div>

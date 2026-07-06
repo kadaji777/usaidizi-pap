@@ -2,22 +2,36 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const LanguageSwitcher: React.FC = () => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
 
-    const toggleLanguage = () => {
-        const newLang = i18n.language === 'en' ? 'sw' : 'en';
-        i18n.changeLanguage(newLang);
-        localStorage.setItem('language', newLang);
+    const setLanguage = (lang: 'en' | 'sw') => {
+        i18n.changeLanguage(lang);
+        localStorage.setItem('i18nextLng', lang);
     };
 
     return (
-        <button
-            className="btn btn-sm btn-outline-secondary rounded-circle position-fixed"
-            style={{ top: '70px', right: '15px', zIndex: 1000, width: '40px', height: '40px' }}
-            onClick={toggleLanguage}
-        >
-            {i18n.language === 'en' ? '🇰🇪' : '🇬🇧'}
-        </button>
+        <div className="d-flex justify-content-between align-items-center py-2">
+            <div className="d-flex align-items-center gap-2">
+                <i className="bi bi-translate fs-5 text-danger"></i>
+                <span>{t('settings.language')}</span>
+            </div>
+            <div className="btn-group" role="group" aria-label={t('settings.language')}>
+                <button
+                    type="button"
+                    className={`btn btn-sm ${i18n.language === 'en' ? 'btn-danger' : 'btn-outline-danger'}`}
+                    onClick={() => setLanguage('en')}
+                >
+                    EN
+                </button>
+                <button
+                    type="button"
+                    className={`btn btn-sm ${i18n.language === 'sw' ? 'btn-danger' : 'btn-outline-danger'}`}
+                    onClick={() => setLanguage('sw')}
+                >
+                    SW
+                </button>
+            </div>
+        </div>
     );
 };
 
