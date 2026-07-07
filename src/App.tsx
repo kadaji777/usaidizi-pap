@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import RequestManagementPage from './pages/Admin/RequestManagementPage';
 
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -12,6 +13,7 @@ import AppNavigation from './components/AppNavigation';
 import { performSync } from './services/syncService';
 
 // Pages
+import AmbulanceRequestPage from './pages/AmbulanceRequestPage';
 import LoginPage from './pages/LoginPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import RoleRouter from './components/RoleRouter';
@@ -74,7 +76,16 @@ const AppContent: React.FC = () => {
                             <IncidentsPage />
                         </ProtectedRoute>
                     } />
-
+                   <Route path="/ambulance-request" element={
+    <ProtectedRoute allowedRoles={['chw', 'admin', 'end_user']}>
+        <AmbulanceRequestPage />
+    </ProtectedRoute>
+} />
+<Route path="/admin/requests" element={
+    <ProtectedRoute allowedRoles={['admin']}>
+        <RequestManagementPage />
+    </ProtectedRoute>
+} />
                     <Route path="/patients" element={
                         <ProtectedRoute allowedRoles={['chw', 'admin']}>
                             <PatientsPage />

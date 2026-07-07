@@ -1,7 +1,29 @@
 import { db } from '../database/db';
 
 const API_BASE = '/api/v1';
-
+async function syncAmbulanceRequests() {
+    const pending = await db.ambulanceRequests.where('sync_status').equals('pending').toArray();
+    for (const req of pending) {
+        try {
+            const { id, sync_status, patient_id, ...payload } = req;
+            let patient_local_uuid: string | undefined;
+            if (patient_id) {
+                const patient = await db.patients.get(patient_id);
+                patient_local_uuid = patient?.local_uuid;
+            }
+            const res = await fetch(`${API_BASE}/ambulance-requests`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...payload, patient_local_uuid }),
+            });
+            if (res.ok && id !== undefined) {
+                await db.ambulanceRequests.update(id, { sync_status: 'synced' });
+            }
+        } catch (e) {
+            console.error('Failed to sync ambulance request', req.local_uuid, e);
+        }
+    }
+}
 async function syncPatients() {
     const pending = await db.patients.where('sync_status').equals('pending').toArray();
     for (const patient of pending) {
@@ -80,6 +102,7 @@ export async function performSync(): Promise<boolean> {
     await syncContacts();
     await syncIncidents();
     await syncMedicationRequests();
+    await syncAmbulanceRequests();
     window.dispatchEvent(new Event('usaidizi-sync-complete'));
     return true;
 }

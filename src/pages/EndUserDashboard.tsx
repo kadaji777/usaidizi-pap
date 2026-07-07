@@ -36,6 +36,7 @@ const EndUserDashboard: React.FC = () => {
         { icon: 'bi-telephone', label: t('common.call_999'), action: () => window.location.href = 'tel:999', color: '#dc3545' },
         { icon: 'bi-building', label: t('nav.find_help'), path: '/facilities', color: '#0d6efd' },
         { icon: 'bi-telephone', label: t('nav.contacts'), path: '/contacts', color: '#198754' },
+        { icon: 'bi-truck', label: t('ambulance.title'), path: '/ambulance-request', color: '#0d6efd' },
     ];
 
     return (

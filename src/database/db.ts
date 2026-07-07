@@ -11,7 +11,18 @@ export interface FirstAidTopic {
     donts: string[] | string;
     warning_signs: string;
 }
-
+export interface AmbulanceRequest {
+    id?: number;
+    local_uuid: string;
+    patient_id?: number;
+    facility_id?: number; // hospital-type Facility, optional if none nearby/known
+    description: string;
+    latitude?: number;
+    longitude?: number;
+    status: 'pending' | 'dispatched' | 'arrived' | 'cancelled';
+    requested_at: Date;
+    sync_status: 'pending' | 'synced';
+}
 export interface Patient {
     id?: number;
     local_uuid: string;
@@ -109,6 +120,16 @@ class UsaidiziDatabase extends Dexie {
             facilities: '++id, name, type, county',
             medicationRequests: '++id, local_uuid, patient_id, facility_id, status, requested_at, sync_status'
         });
+// v5: add ambulanceRequests table.
+        this.version(5).stores({
+            firstAidTopics: '++id, title, slug, category',
+            patients: '++id, local_uuid, full_name, sync_status',
+            emergencyContacts: '++id, local_uuid, patient_id, name, is_primary, sync_status',
+            incidentLogs: '++id, local_uuid, patient_id, topic_id, incident_timestamp, sync_status',
+            facilities: '++id, name, type, county',
+            medicationRequests: '++id, local_uuid, patient_id, facility_id, status, requested_at, sync_status',
+            ambulanceRequests: '++id, local_uuid, patient_id, facility_id, status, requested_at, sync_status'
+        });
     }
 
     async getPendingSyncItems() {
@@ -116,7 +137,8 @@ class UsaidiziDatabase extends Dexie {
         const contacts = await this.emergencyContacts.where('sync_status').equals('pending').toArray();
         const incidents = await this.incidentLogs.where('sync_status').equals('pending').toArray();
         const medicationRequests = await this.medicationRequests.where('sync_status').equals('pending').toArray();
-        return { patients, contacts, incidents, medicationRequests };
+        const ambulanceRequests = await this.ambulanceRequests.where('sync_status').equals('pending').toArray();
+        return { patients, contacts, incidents, medicationRequests, ambulanceRequests };
     }
 }
 

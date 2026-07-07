@@ -31,7 +31,7 @@ const CHWDashboard: React.FC = () => {
         setStats({
     incidents,
     patients,
-    pendingSync: pending.patients.length + pending.contacts.length + pending.incidents.length + pending.medicationRequests.length
+    pendingSync: pending.patients.length + pending.contacts.length + pending.incidents.length + pending.medicationRequests.length + pending.ambulanceRequests.length
 });    };
 
     const emergencyGuides = [
@@ -48,6 +48,7 @@ const CHWDashboard: React.FC = () => {
         { icon: 'bi-building', label: t('nav.find_help'), path: '/facilities', color: '#3498db' },
         { icon: 'bi-telephone', label: t('nav.contacts'), path: '/contacts', color: '#f39c12' },
         { icon: 'bi-capsule', label: t('medication.title'), path: '/medication-requests', color: '#9b59b6' },
+        { icon: 'bi-truck', label: t('ambulance.title'), path: '/ambulance-request', color: '#0d6efd' },
     ];
 
     const handleSync = async () => {

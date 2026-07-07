@@ -77,6 +77,13 @@ const AdminDashboard: React.FC = () => {
             path: '/admin/health',
             color: '#2ecc71'
         },
+        {
+    icon: 'bi-clipboard-check',
+    title: 'Request Management',
+    desc: 'Medication & ambulance',
+    path: '/admin/requests',
+    color: '#e67e22'
+},
     ];
 
     const quickStats = [
