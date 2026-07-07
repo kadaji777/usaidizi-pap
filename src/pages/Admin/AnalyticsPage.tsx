@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
+import { exportIncidentsToCSV, exportIncidentsToPDF } from '../../utils/exportHelpers';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
@@ -9,6 +10,9 @@ interface IncidentRecord {
     id: number;
     severity: string;
     incident_timestamp: string;
+    description: string;
+    patient?: { full_name: string };
+    topic?: { title: string };
 }
 
 const AnalyticsPage: React.FC = () => {
@@ -46,7 +50,6 @@ const AnalyticsPage: React.FC = () => {
         }
     };
 
-    // Severity distribution
     const severityCounts = {
         low: incidents.filter(i => i.severity === 'low').length,
         medium: incidents.filter(i => i.severity === 'medium').length,
@@ -63,7 +66,6 @@ const AnalyticsPage: React.FC = () => {
         }],
     };
 
-    // Last 6 months
     const getLast6Months = () => {
         const months = [];
         const counts = [];
@@ -117,7 +119,23 @@ const AnalyticsPage: React.FC = () => {
                 </div>
             )}
 
-            {/* Stats Cards */}
+            <div className="d-flex gap-2 mb-4">
+                <button
+                    className="btn btn-outline-danger flex-grow-1 rounded-pill"
+                    onClick={() => exportIncidentsToCSV(incidents)}
+                    disabled={incidents.length === 0}
+                >
+                    <i className="bi bi-filetype-csv me-2"></i>Export CSV
+                </button>
+                <button
+                    className="btn btn-danger flex-grow-1 rounded-pill"
+                    onClick={() => exportIncidentsToPDF(incidents, stats)}
+                    disabled={incidents.length === 0}
+                >
+                    <i className="bi bi-file-earmark-pdf me-2"></i>Export PDF
+                </button>
+            </div>
+
             <div className="row g-2 mb-4">
                 <div className="col-3">
                     <div className="card border-0 shadow-sm text-center p-2 rounded-3">
@@ -145,7 +163,6 @@ const AnalyticsPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Charts */}
             <div className="card border-0 shadow-sm mb-3 rounded-4">
                 <div className="card-body">
                     <h6 className="fw-bold mb-3">Severity Distribution</h6>
