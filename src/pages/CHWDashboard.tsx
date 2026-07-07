@@ -29,11 +29,10 @@ const CHWDashboard: React.FC = () => {
         const patients = await db.patients.count();
         const pending = await db.getPendingSyncItems();
         setStats({
-            incidents,
-            patients,
-            pendingSync: pending.patients.length + pending.contacts.length + pending.incidents.length
-        });
-    };
+    incidents,
+    patients,
+    pendingSync: pending.patients.length + pending.contacts.length + pending.incidents.length + pending.medicationRequests.length
+});    };
 
     const emergencyGuides = [
         { name: t('firstaid.burns'), icon: 'bi-droplet', color: '#e74c5e', slug: 'burns' },
@@ -48,6 +47,7 @@ const CHWDashboard: React.FC = () => {
         { icon: 'bi-person-plus', label: t('dashboard.add_patient'), path: '/patients', color: '#2ecc71' },
         { icon: 'bi-building', label: t('nav.find_help'), path: '/facilities', color: '#3498db' },
         { icon: 'bi-telephone', label: t('nav.contacts'), path: '/contacts', color: '#f39c12' },
+        { icon: 'bi-capsule', label: t('medication.title'), path: '/medication-requests', color: '#9b59b6' },
     ];
 
     const handleSync = async () => {

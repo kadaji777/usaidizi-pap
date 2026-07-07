@@ -24,7 +24,7 @@ import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import FirstAidQuiz from './pages/FirstAidQuiz';
 import ProfilePage from './pages/ProfilePage';
 import AdminDashboard from './pages/AdminDashboard';
-
+import MedicationRequestsPage from './pages/MedicationRequestsPage';
 // Admin Pages
 import UsersPage from './pages/Admin/UsersPage';
 import ContentPage from './pages/Admin/ContentPage';
@@ -80,7 +80,11 @@ const AppContent: React.FC = () => {
                             <PatientsPage />
                         </ProtectedRoute>
                     } />
-
+                    <Route path="/medication-requests" element={
+    <ProtectedRoute allowedRoles={['chw', 'admin', 'end_user']}>
+        <MedicationRequestsPage />
+    </ProtectedRoute>
+} /> 
                     <Route path="/contacts" element={<EmergencyContactsPage />} />
                     <Route path="/facilities" element={<FacilitiesPage />} />
 

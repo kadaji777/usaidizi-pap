@@ -79,6 +79,30 @@ export async function performSync(): Promise<boolean> {
     await syncPatients();
     await syncContacts();
     await syncIncidents();
+    await syncMedicationRequests();
     window.dispatchEvent(new Event('usaidizi-sync-complete'));
     return true;
+}
+async function syncMedicationRequests() {
+    const pending = await db.medicationRequests.where('sync_status').equals('pending').toArray();
+    for (const req of pending) {
+        try {
+            const { id, sync_status, patient_id, ...payload } = req;
+            let patient_local_uuid: string | undefined;
+            if (patient_id) {
+                const patient = await db.patients.get(patient_id);
+                patient_local_uuid = patient?.local_uuid;
+            }
+            const res = await fetch(`${API_BASE}/medication-requests`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...payload, patient_local_uuid }),
+            });
+            if (res.ok && id !== undefined) {
+                await db.medicationRequests.update(id, { sync_status: 'synced' });
+            }
+        } catch (e) {
+            console.error('Failed to sync medication request', req.local_uuid, e);
+        }
+    }
 }
