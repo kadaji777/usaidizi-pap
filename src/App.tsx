@@ -34,6 +34,7 @@ import AdminFacilitiesPage from './pages/Admin/FacilitiesPage';
 import SystemHealthPage from './pages/Admin/SystemHealthPage';
 import DataSyncPage from './pages/Admin/DataSyncPage';
 import AnalyticsPage from './pages/Admin/AnalyticsPage';
+import SubmitFirstAidGuidePage from './pages/SubmitFirstAidGuidePage';
 
 const AppContent: React.FC = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -84,6 +85,11 @@ const AppContent: React.FC = () => {
 <Route path="/admin/requests" element={
     <ProtectedRoute allowedRoles={['admin']}>
         <RequestManagementPage />
+    </ProtectedRoute>
+} />
+<Route path="/submit-guide" element={
+    <ProtectedRoute allowedRoles={['chw', 'admin']}>
+        <SubmitFirstAidGuidePage />
     </ProtectedRoute>
 } />
                     <Route path="/patients" element={

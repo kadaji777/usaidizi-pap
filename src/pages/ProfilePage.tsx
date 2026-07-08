@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../database/db';
 import { useTranslation } from 'react-i18next';
@@ -8,9 +9,11 @@ import DarkModeToggle from '../components/DarkModeToggle';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const ProfilePage: React.FC = () => {
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
     const { t } = useTranslation();
-    const [stats, setStats] = useState({ incidents: 0, patients: 0, contacts: 0 });
+    const [stats, setStats] = useState({ incidents: 0, patients: 0, contacts: 0, medicationRequests: 0, ambulanceRequests: 0 });
+    const [serverStats, setServerStats] = useState({ incidents: 0, patients: 0, facilities: 0, contacts: 0 });
     const [isEditing, setIsEditing] = useState(false);
     const [profilePic, setProfilePic] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,7 +25,8 @@ const ProfilePage: React.FC = () => {
     });
     const [loading, setLoading] = useState(true);
 
-    // Role display name mapping — resolved via i18n
+    const userRole = user?.role || 'end_user';
+
     const roleKeys: Record<string, string> = {
         end_user: 'profile.role_end_user',
         chw: 'profile.role_chw',
@@ -39,7 +43,19 @@ const ProfilePage: React.FC = () => {
             incidents: await db.incidentLogs.count(),
             patients: await db.patients.count(),
             contacts: await db.emergencyContacts.count(),
+            medicationRequests: await db.medicationRequests.count(),
+            ambulanceRequests: await db.ambulanceRequests.count(),
         });
+
+        if (userRole === 'admin' && navigator.onLine) {
+            try {
+                const res = await fetch('/api/v1/admin/stats');
+                if (res.ok) setServerStats(await res.json());
+            } catch (e) {
+                console.error('Failed to load admin server stats:', e);
+            }
+        }
+
         setLoading(false);
     };
 
@@ -90,7 +106,6 @@ const ProfilePage: React.FC = () => {
     };
 
     const displayName = profile.displayName || user?.displayName || user?.email?.split('@')[0] || t('profile.default_user');
-    const userRole = user?.role || 'end_user';
     const roleName = t(roleKeys[userRole] || roleKeys.end_user);
 
     if (loading) {
@@ -104,17 +119,20 @@ const ProfilePage: React.FC = () => {
     return (
         <div className="container py-3" style={{ maxWidth: '480px', margin: '0 auto' }}>
 
-            {/* Profile Header */}
+            {/* Profile Header — same shape for everyone, but the badge/tagline differs */}
             <div
                 className="card text-white mb-4 border-0"
                 style={{
-                    background: 'linear-gradient(145deg, #e74c5e, #c0392b)',
+                    background: userRole === 'admin'
+                        ? 'linear-gradient(145deg, #2c3e50, #1a252f)'
+                        : userRole === 'chw'
+                        ? 'linear-gradient(145deg, #e74c5e, #c0392b)'
+                        : 'linear-gradient(145deg, #3498db, #2471a3)',
                     borderRadius: '20px',
-                    boxShadow: '0 8px 32px rgba(231, 76, 94, 0.3)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
                 }}
             >
                 <div className="card-body text-center py-4">
-                    {/* Profile Picture */}
                     <div className="position-relative d-inline-block mb-2">
                         {profilePic ? (
                             <img
@@ -165,7 +183,7 @@ const ProfilePage: React.FC = () => {
                     <p className="mb-0 opacity-75 small">{user?.email}</p>
 
                     <div className="mt-2">
-                        <span className="badge bg-white text-danger px-3 py-1 rounded-pill">
+                        <span className="badge bg-white text-dark px-3 py-1 rounded-pill">
                             {roleName}
                         </span>
                     </div>
@@ -180,7 +198,6 @@ const ProfilePage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Edit/Save Buttons */}
             <div className="d-flex gap-2 mb-4">
                 {isEditing ? (
                     <>
@@ -189,10 +206,7 @@ const ProfilePage: React.FC = () => {
                         </button>
                         <button
                             className="btn btn-outline-secondary py-2 rounded-pill"
-                            onClick={() => {
-                                setIsEditing(false);
-                                loadUserProfile();
-                            }}
+                            onClick={() => { setIsEditing(false); loadUserProfile(); }}
                         >
                             {t('common.cancel')}
                         </button>
@@ -204,7 +218,6 @@ const ProfilePage: React.FC = () => {
                 )}
             </div>
 
-            {/* Additional Profile Fields */}
             {isEditing && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mb-4">
                     <div className="card border-0 shadow-sm" style={{ borderRadius: '14px' }}>
@@ -248,7 +261,124 @@ const ProfilePage: React.FC = () => {
                 </motion.div>
             )}
 
-            {/* Settings */}
+            {/* ── ROLE-SPECIFIC CONTENT ─────────────────────────── */}
+
+            {userRole === 'admin' && (
+                <>
+                    <h6 className="text-body-secondary mb-3">{t('profile.system_overview')}</h6>
+                    <div className="row g-3 mb-4">
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-3 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-journal-text fs-2 text-danger"></i>
+                                <h3 className="mb-0">{serverStats.incidents}</h3>
+                                <small className="text-body-secondary">{t('profile.total_incidents')}</small>
+                            </div>
+                        </div>
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-3 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-people fs-2 text-success"></i>
+                                <h3 className="mb-0">{serverStats.patients}</h3>
+                                <small className="text-body-secondary">{t('profile.total_patients')}</small>
+                            </div>
+                        </div>
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-3 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-building fs-2 text-primary"></i>
+                                <h3 className="mb-0">{serverStats.facilities}</h3>
+                                <small className="text-body-secondary">{t('profile.total_facilities')}</small>
+                            </div>
+                        </div>
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-3 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-telephone fs-2 text-info"></i>
+                                <h3 className="mb-0">{serverStats.contacts}</h3>
+                                <small className="text-body-secondary">{t('profile.total_contacts')}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        className="btn btn-outline-primary w-100 py-2 rounded-pill mb-4"
+                        onClick={() => navigate('/admin')}
+                    >
+                        <i className="bi bi-speedometer2 me-2"></i>{t('profile.go_to_admin_panel')}
+                    </button>
+                </>
+            )}
+
+            {userRole === 'chw' && (
+                <>
+                    <h6 className="text-body-secondary mb-3">{t('profile.your_activity')}</h6>
+                    <div className="row g-2 mb-3">
+                        <div className="col-4">
+                            <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-journal-text fs-2 text-danger"></i>
+                                <h3 className="mb-0">{stats.incidents}</h3>
+                                <small className="text-body-secondary">{t('dashboard.incidents')}</small>
+                            </div>
+                        </div>
+                        <div className="col-4">
+                            <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-people fs-2 text-success"></i>
+                                <h3 className="mb-0">{stats.patients}</h3>
+                                <small className="text-body-secondary">{t('dashboard.patients')}</small>
+                            </div>
+                        </div>
+                        <div className="col-4">
+                            <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-telephone fs-2 text-primary"></i>
+                                <h3 className="mb-0">{stats.contacts}</h3>
+                                <small className="text-body-secondary">{t('nav.contacts')}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row g-2 mb-4">
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-capsule fs-2 text-info"></i>
+                                <h3 className="mb-0">{stats.medicationRequests}</h3>
+                                <small className="text-body-secondary">{t('medication.title')}</small>
+                            </div>
+                        </div>
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-truck fs-2 text-warning"></i>
+                                <h3 className="mb-0">{stats.ambulanceRequests}</h3>
+                                <small className="text-body-secondary">{t('ambulance.title')}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        className="btn btn-outline-danger w-100 py-2 rounded-pill mb-4"
+                        onClick={() => navigate('/submit-guide')}
+                    >
+                        <i className="bi bi-journal-medical me-2"></i>{t('dashboard.submit_guide')}
+                    </button>
+                </>
+            )}
+
+            {userRole === 'end_user' && (
+                <>
+                    <h6 className="text-body-secondary mb-3">{t('profile.your_activity')}</h6>
+                    <div className="row g-2 mb-4">
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-capsule fs-2 text-info"></i>
+                                <h3 className="mb-0">{stats.medicationRequests}</h3>
+                                <small className="text-body-secondary">{t('medication.title')}</small>
+                            </div>
+                        </div>
+                        <div className="col-6">
+                            <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
+                                <i className="bi bi-truck fs-2 text-warning"></i>
+                                <h3 className="mb-0">{stats.ambulanceRequests}</h3>
+                                <small className="text-body-secondary">{t('ambulance.title')}</small>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Settings — same for everyone */}
             <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '14px' }}>
                 <div className="card-body">
                     <h6 className="fw-bold mb-2">{t('settings.title')}</h6>
@@ -258,38 +388,9 @@ const ProfilePage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Stats */}
-            <h6 className="text-body-secondary mb-3">{t('profile.your_activity')}</h6>
-            <div className="row g-3 mb-4">
-                <div className="col-4">
-                    <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
-                        <i className="bi bi-journal-text fs-2 text-danger"></i>
-                        <h3 className="mb-0">{stats.incidents}</h3>
-                        <small className="text-body-secondary">{t('dashboard.incidents')}</small>
-                    </div>
-                </div>
-                <div className="col-4">
-                    <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
-                        <i className="bi bi-people fs-2 text-success"></i>
-                        <h3 className="mb-0">{stats.patients}</h3>
-                        <small className="text-body-secondary">{t('dashboard.patients')}</small>
-                    </div>
-                </div>
-                <div className="col-4">
-                    <div className="card text-center shadow-sm p-2 border-0" style={{ borderRadius: '14px' }}>
-                        <i className="bi bi-telephone fs-2 text-primary"></i>
-                        <h3 className="mb-0">{stats.contacts}</h3>
-                        <small className="text-body-secondary">{t('nav.contacts')}</small>
-                    </div>
-                </div>
-            </div>
-
-            {/* Logout */}
             <button
                 className="btn btn-outline-danger w-100 py-2 rounded-pill"
-                onClick={() => {
-                    if (window.confirm(t('profile.logout_confirm'))) logout();
-                }}
+                onClick={() => { if (window.confirm(t('profile.logout_confirm'))) logout(); }}
             >
                 <i className="bi bi-box-arrow-right me-2"></i>{t('profile.sign_out')}
             </button>

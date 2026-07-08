@@ -29,10 +29,16 @@ const CHWDashboard: React.FC = () => {
         const patients = await db.patients.count();
         const pending = await db.getPendingSyncItems();
         setStats({
-    incidents,
-    patients,
-    pendingSync: pending.patients.length + pending.contacts.length + pending.incidents.length + pending.medicationRequests.length + pending.ambulanceRequests.length
-});    };
+            incidents,
+            patients,
+            pendingSync:
+                pending.patients.length +
+                pending.contacts.length +
+                pending.incidents.length +
+                pending.medicationRequests.length +
+                pending.ambulanceRequests.length
+        });
+    };
 
     const emergencyGuides = [
         { name: t('firstaid.burns'), icon: 'bi-droplet', color: '#e74c5e', slug: 'burns' },
@@ -42,13 +48,19 @@ const CHWDashboard: React.FC = () => {
         { name: t('firstaid.bleeding'), icon: 'bi-droplet-half', color: '#e74c5e', slug: 'severe-bleeding' },
     ];
 
+    // Trimmed to the 4 things a CHW does most often in the field.
+    // Find Help / Contacts / Medication / Ambulance moved to "More Services".
     const mainActions = [
         { icon: 'bi-journal-plus', label: t('dashboard.log_incident'), path: '/incidents', color: '#e74c5e' },
         { icon: 'bi-person-plus', label: t('dashboard.add_patient'), path: '/patients', color: '#2ecc71' },
-        { icon: 'bi-building', label: t('nav.find_help'), path: '/facilities', color: '#3498db' },
-        { icon: 'bi-telephone', label: t('nav.contacts'), path: '/contacts', color: '#f39c12' },
         { icon: 'bi-capsule', label: t('medication.title'), path: '/medication-requests', color: '#9b59b6' },
         { icon: 'bi-truck', label: t('ambulance.title'), path: '/ambulance-request', color: '#0d6efd' },
+    ];
+
+    const moreServices = [
+        { icon: 'bi-building', label: t('nav.find_help'), path: '/facilities' },
+        { icon: 'bi-telephone', label: t('nav.contacts'), path: '/contacts' },
+        { icon: 'bi-journal-medical', label: t('dashboard.submit_guide'), path: '/submit-guide' },
     ];
 
     const handleSync = async () => {
@@ -93,7 +105,6 @@ const CHWDashboard: React.FC = () => {
                 <p className="text-body-secondary small mb-0">{t('dashboard.chw_role')}</p>
             </div>
 
-            {/* Stats Cards */}
             <div className="row g-2 mb-3">
                 <div className="col-4">
                     <div className="card text-center p-3 border-0 shadow-sm" style={{ borderRadius: '12px', borderTop: '3px solid #e74c5e' }}>
@@ -115,21 +126,21 @@ const CHWDashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* Sync Button */}
             <button
                 className="btn btn-outline-primary w-100 py-2 rounded-pill mb-5"
                 onClick={handleSync}
                 disabled={syncing}
             >
-                {syncing
-                    ? <span className="spinner-border spinner-border-sm me-2"></span>
-                    : <i className="bi bi-cloud-sync me-2"></i>}
+                {syncing ? (
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                ) : (
+                    <i className="bi bi-cloud-sync me-2"></i>
+                )}
                 {t('dashboard.sync_data')}
             </button>
 
-            {/* Main Actions */}
             <h6 className="fw-bold mb-3">{t('dashboard.quick_actions')}</h6>
-            <div className="row g-2 mb-5">
+            <div className="row g-2 mb-4">
                 {mainActions.map((action, index) => (
                     <div key={index} className="col-3">
                         <button
@@ -145,7 +156,18 @@ const CHWDashboard: React.FC = () => {
                 ))}
             </div>
 
-            {/* Emergency Guides */}
+            <div className="d-flex flex-wrap gap-2 mb-5">
+                {moreServices.map((service, index) => (
+                    <button
+                        key={index}
+                        className="btn btn-outline-secondary btn-sm rounded-pill"
+                        onClick={() => navigate(service.path)}
+                    >
+                        <i className={`${service.icon} me-1`}></i>{service.label}
+                    </button>
+                ))}
+            </div>
+
             <h6 className="fw-bold mb-3">{t('firstaid.guides')}</h6>
             <div
                 className="d-flex gap-2 overflow-auto pb-2"
